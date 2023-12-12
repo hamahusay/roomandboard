@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Calculator</title>
+    <script>
+        function calculateRevenue() {
+            var inStateStudents = parseInt(document.getElementById("inStateStudents").value);
+            var outOfStateStudents = parseInt(document.getElementById("outOfStateStudents").value);
+            var inStateTuition = 28280;  // In-state tuition cost
+            var outOfStateTuition = 45486;  // Out-of-state tuition cost
+            var numStudents2Person = parseInt(document.getElementById("numStudents2Person").value);
+            var numStudents4PersonPrivate = parseInt(document.getElementById("numStudents4PersonPrivate").value);
+            var numStudents4PersonShared = parseInt(document.getElementById("numStudents4PersonShared").value);
+            var roomBoardDiscount = document.getElementById("roomBoardDiscount").value;
+
+            if ((numStudents2Person + numStudents4PersonPrivate + numStudents4PersonShared) > (inStateStudents + outOfStateStudents)) {
+                alert("Error: Total number of students in each living plan cannot exceed the sum of in-state and out-of-state entries.");
+                return;
+            }
+
+            var roomBoardCost2Person = 10300;
+            var roomBoardCost4PersonPrivate = 10610;
+            var roomBoardCost4PersonShared = 8504;
+
+            var totalRevenue = inStateTuition * inStateStudents + outOfStateTuition * outOfStateStudents +
+                               roomBoardCost2Person * numStudents2Person +
+                               roomBoardCost4PersonPrivate * numStudents4PersonPrivate +
+                               roomBoardCost4PersonShared * numStudents4PersonShared;
+
+            if (roomBoardDiscount === "half") {
+                totalRevenue -= (roomBoardCost2Person * numStudents2Person +
+                                 roomBoardCost4PersonPrivate * numStudents4PersonPrivate +
+                                 roomBoardCost4PersonShared * numStudents4PersonShared) / 2;
+            } else if (roomBoardDiscount === "full") {
+                totalRevenue -= roomBoardCost2Person * numStudents2Person +
+                                roomBoardCost4PersonPrivate * numStudents4PersonPrivate +
+                                roomBoardCost4PersonShared * numStudents4PersonShared;
+            }
+
+            var moneyLost = inStateTuition * inStateStudents + outOfStateTuition * outOfStateStudents +
+                            roomBoardCost2Person * numStudents2Person +
+                            roomBoardCost4PersonPrivate * numStudents4PersonPrivate +
+                            roomBoardCost4PersonShared * numStudents4PersonShared;
+
+            var revenueDifference = totalRevenue - moneyLost;
+            var extraStudentsToBreakEven = Math.ceil(Math.abs(revenueDifference) / inStateTuition);
+
+            document.getElementById("totalRevenue").innerHTML = "Total revenue: $" + totalRevenue.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+            document.getElementById("moneyLost").innerHTML = "Money lost without offering any discount: $" + moneyLost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+            document.getElementById("revenueDifference").innerHTML = "Difference between total revenue and money lost: $" + revenueDifference.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+            document.getElementById("extraStudentsToBreakEven").innerHTML = "Students extra required to break even on profit: " + extraStudentsToBreakEven;
+        }
+    </script>
+</head>
+<body>
+    <h1>Revenue Calculator</h1>
+    <form>
+        <label for="inStateStudents">Number of projected in-state students:</label>
+        <input type="number" id="inStateStudents" required>
+        <br>
+
+        <label for="outOfStateStudents">Number of projected out-of-state students:</label>
+        <input type="number" id="outOfStateStudents" required>
+        <br>
+
+        <label for="numStudents2Person">Number of projected students for 2-person with bath:</label>
+        <input type="number" id="numStudents2Person" required>
+        <br>
+
+        <label for="numStudents4PersonPrivate">Number of projected students for 4 person suite 2 bath private bedroom:</label>
+        <input type="number" id="numStudents4PersonPrivate" required>
+        <br>
+
+        <label for="numStudents4PersonShared">Number of projected students for 4 person 2 bath shared bedroom:</label>
+        <input type="number" id="numStudents4PersonShared" required>
+        <br>
+
+        <label for="roomBoardDiscount">Room and board discount (none, half, full):</label>
+        <select id="roomBoardDiscount" required>
+            <option value="none">None</option>
+            <option value="half">Half</option>
+            <option value="full">Full</option>
+        </select>
+        <br>
+
+        <button type="button" onclick="calculateRevenue()">Calculate</button>
+    </form>
+
+    <h2>Results:</h2>
+    <p id="totalRevenue"></p>
+    <p id="moneyLost"></p>
+    <p id="revenueDifference"></p>
+    <p id="extraStudentsToBreakEven"></p>
+</body>
+</html>
